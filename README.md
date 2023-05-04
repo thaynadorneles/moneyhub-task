@@ -1,3 +1,34 @@
+# My Solution:
+
+For my solution, I have used `axios` and `jest` as additional packages. The new routes can be found at the bottom of this readme along with where the other routes are specified.
+
+Run the tests within the `admin` folder with
+```bash
+npm test
+```
+## Questions
+
+###### How might you make this service more secure?
+
+There would need to be authorization, so that only those that are allowed can have access to this service.
+
+###### How would you make this solution scale to millions of records?
+
+Data could be dealt with in smaller batches, this is specifically true for those functions dealing with all the investment data. If this data was being read through a stream for example, we could slow it down so that we can calculate the holding values per batches.
+
+Another solution could be having this run on the Cloud, somewhere where we could increase the size of the server as much as we need to, so that we could run this much faster. As this service would only need to be running when it is requested, AWS Lambda could be a useful tool for this.
+
+Could also scale by keeping a cache of the latest holding values calculated, so that if it was already in cache, you wouldn't need to re-calculate it. However, if the investments can be changed frequently, then you'd also need to know the last time this was changed to know if the cache is still correct. Therefore depending on whether the investments can be changed or if they are changed frequently, this might not be the best solution.
+
+###### What else would you have liked to improve given more time?
+
+Given more time, I'd like to go back to the tests and mock the requests, so that I'd know that the test data would never be changed, instead of using the data that is being worked on. This would allow for tests to be more accurate, as we would have full control of what we expect the response to be. Furthermore, I would have also liked to test that when an error occurs, my code does what is expected. For example, you could get an error when using the `getHoldingAccount()` function, and this should also be tested.
+
+I would also like to clarify my assumptions to make sure that what I have done is what was expected.
+
+## Assumptions
+- The date in the holding values should be the date in the investment record, and not the day this was created. The reason for this is that there are cases in the example, such as where Billy Bob created two different investment records for the same holding, but with different `investmentTotal`'s and in different `dates`. It felt strange having the same date for these two holding values, and since the holding value isn't affected by the date, it seemed to me that it was wise to keep the date in which the investment was made.
+
 # Moneyhub Tech Test - Investments and Holdings
 
 At Moneyhub we use microservices to partition and separate the concerns of the codebase. In this exercise we have given you an example `admin` service and some accompanying services to work with. In this case the admin service backs a front end admin tool allowing non-technical staff to interact with data.
@@ -75,3 +106,6 @@ Financial Companies - localhost:8082
 
 Admin - localhost:8083
 - `/investments/:id` get an investment record by id
+- `/admin/value/investments` get the holding value for all investments
+- `/admin/value/investments/:id` get the holding value for an investment record by id
+- `/admin/generate/report` get and send report with the holding values of all investments
