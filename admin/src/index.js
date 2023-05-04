@@ -1,22 +1,29 @@
 const express = require("express")
 const bodyParser = require("body-parser")
 const config = require("config")
-const request = require("request")
+const Controller = require("./controller")
+const controller = new Controller()
 
 const app = express()
 
 app.use(bodyParser.json({limit: "10mb"}))
 
-app.get("/investments/:id", (req, res) => {
+app.get("/investments/:id", async (req, res) => {
   const {id} = req.params
-  request.get(`${config.investmentsServiceUrl}/investments/${id}`, (e, r, investments) => {
-    if (e) {
-      console.error(e)
-      res.send(500)
-    } else {
-      res.send(investments)
-    }
-  })
+  res.send(await controller.getInvestment(id))
+})
+
+app.get("/admin/value/investments", async (req, res) => {
+  res.send(await controller.getAllInvestmentValue())
+})
+
+app.get("/admin/value/investments/:id", async (req, res) => {
+  const {id} = req.params
+  res.send(await controller.getInvestmentValue(id))
+})
+
+app.get("/admin/generate/report", async (req, res) => {
+  res.send(await controller.generateReport())
 })
 
 app.listen(config.port, (err) => {
